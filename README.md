@@ -17,15 +17,26 @@ clawdhub install skill-api-monitor
 ## Usage
 
 ```bash
-# Discover your public skills
+# First time? Run interactive setup
+python3 scripts/check.py --setup
+
+# Or specify your username directly
 python3 scripts/check.py --github-user YOUR_USERNAME --discover
 
 # Check for API updates (last 7 days)
 python3 scripts/check.py --github-user YOUR_USERNAME --days 7
 
-# Full check with X/Twitter (slower)
-python3 scripts/check.py --github-user YOUR_USERNAME --days 7 --include-x
+# After setup saves your username, just run:
+python3 scripts/check.py --days 7
 ```
+
+### Setup Walkthrough
+
+The `--setup` command guides you through:
+1. **Enter username** - Your GitHub username
+2. **Discover skills** - Finds your moltbot-skill-*/clawdbot-skill-* repos
+3. **Detect APIs** - Shows which API each skill uses
+4. **Save config** - Optionally saves username for future runs
 
 ## How It Works
 

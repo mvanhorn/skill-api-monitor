@@ -15,14 +15,30 @@ Works for **any GitHub user** - just pass your username.
 ## Quick Start
 
 ```bash
-# Check YOUR skills (replace with your GitHub username)
-python3 {baseDir}/scripts/check.py --github-user YOUR_USERNAME
+# Interactive setup (first time)
+python3 {baseDir}/scripts/check.py --setup
 
+# Or specify your GitHub username directly
+python3 {baseDir}/scripts/check.py --github-user YOUR_USERNAME --discover
+```
+
+The `--setup` command will:
+1. Ask for your GitHub username
+2. Discover your public Moltbot/Clawdbot skills
+3. Show which APIs were detected
+4. Optionally save your username for future runs
+
+## Usage
+
+```bash
 # Discover your public skills
 python3 {baseDir}/scripts/check.py --github-user YOUR_USERNAME --discover
 
 # Full check with 7-day lookback
 python3 {baseDir}/scripts/check.py --github-user YOUR_USERNAME --days 7
+
+# After setup, you can omit --github-user
+python3 {baseDir}/scripts/check.py --days 7
 ```
 
 ## What it does

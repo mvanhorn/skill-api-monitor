@@ -366,6 +366,85 @@ def check_skill_api(skill: dict, api_info: dict, days: int = 7, skip_x: bool = F
     return result
 
 
+def run_setup():
+    """Interactive onboarding for new users."""
+    print("=" * 50)
+    print("🔍 SKILL API MONITOR - SETUP")
+    print("=" * 50)
+    print()
+    print("This tool monitors APIs used by your Moltbot/Clawdbot skills")
+    print("and alerts you when new features are released.")
+    print()
+    
+    # Step 1: Get GitHub username
+    print("STEP 1: GitHub Username")
+    print("-" * 30)
+    github_user = input("Enter your GitHub username: ").strip()
+    
+    if not github_user:
+        print("❌ Username required. Exiting.")
+        return
+    
+    print(f"\n✓ Using GitHub user: {github_user}")
+    
+    # Step 2: Discover skills
+    print("\nSTEP 2: Discovering Your Skills")
+    print("-" * 30)
+    print(f"Scanning {github_user}'s public repos for Moltbot/Clawdbot skills...")
+    
+    skills = discover_public_skills(github_user)
+    
+    if not skills:
+        print("\n⚠️  No public Moltbot/Clawdbot skills found.")
+        print("\nSkills are detected by:")
+        print("  • Repo names: moltbot-skill-*, clawdbot-skill-*")
+        print("  • SKILL.md with moltbot/clawdbot metadata")
+        print("\nMake sure your skill repos are public and follow the naming convention.")
+    else:
+        print(f"\n✓ Found {len(skills)} skill(s):\n")
+        for skill in skills:
+            print(f"  • {skill['name']} ({skill['repo']})")
+    
+    # Step 3: Detect APIs
+    if skills:
+        print("\nSTEP 3: Detecting APIs")
+        print("-" * 30)
+        
+        for skill in skills:
+            readme = fetch_skill_readme(skill["repo"])
+            api_info = detect_api_from_content(readme, skill["name"])
+            api_name = api_info.get("name", "Unknown")
+            print(f"  • {skill['name']} → {api_name}")
+    
+    # Step 4: Save config
+    print("\nSTEP 4: Save Configuration")
+    print("-" * 30)
+    
+    save = input(f"Save '{github_user}' as default? (y/n): ").strip().lower()
+    
+    if save == 'y':
+        config_file = SCRIPT_DIR / ".config.json"
+        try:
+            with open(config_file, 'w') as f:
+                json.dump({"github_user": github_user}, f, indent=2)
+            print(f"✓ Saved to {config_file}")
+            print("\nYou can now run without --github-user:")
+            print("  python3 check.py --discover")
+            print("  python3 check.py --days 7")
+        except Exception as e:
+            print(f"⚠️  Could not save config: {e}")
+    
+    # Done
+    print("\n" + "=" * 50)
+    print("✅ SETUP COMPLETE!")
+    print("=" * 50)
+    print("\nNext steps:")
+    print(f"  • Check for updates:  python3 check.py --github-user {github_user} --days 7")
+    print(f"  • Discover skills:    python3 check.py --github-user {github_user} --discover")
+    print("\nSet up a weekly cron to get automatic notifications!")
+    print()
+
+
 def main():
     parser = argparse.ArgumentParser(description="Skill API Monitor")
     parser.add_argument("--skill", "-s", help="Check specific skill only")
