@@ -116,20 +116,29 @@ def discover_public_skills(github_user: str = "mvanhorn") -> list:
                     continue
                 
                 # Also check repos that might be skills without the prefix
-                # by looking for SKILL.md (lightweight check via API)
+                # by looking for SKILL.md with moltbot/clawdbot metadata
                 if name not in ["dotfiles", "config", ".github"]:  # Skip common non-skill repos
                     try:
+                        # Fetch SKILL.md content to verify it's a Moltbot/Clawdbot skill
                         check = subprocess.run(
-                            ["gh", "api", f"repos/{github_user}/{name}/contents/SKILL.md", "-q", ".name"],
-                            capture_output=True, text=True, timeout=5
+                            ["gh", "api", f"repos/{github_user}/{name}/contents/SKILL.md", "-q", ".content"],
+                            capture_output=True, text=True, timeout=10
                         )
-                        if check.returncode == 0 and "SKILL.md" in check.stdout:
-                            skills.append({
-                                "name": name,
-                                "repo": f"{github_user}/{name}",
-                                "description": desc,
-                                "detected_via": "SKILL.md"
-                            })
+                        if check.returncode == 0 and check.stdout.strip():
+                            import base64
+                            content = base64.b64decode(check.stdout.strip()).decode('utf-8', errors='ignore').lower()
+                            # Only include if it has moltbot/clawdbot metadata
+                            is_moltbot_skill = any(kw in content for kw in [
+                                "moltbot:", "clawdbot:", "metadata:", 
+                                "molthub", "clawdhub", "{basedir}"
+                            ])
+                            if is_moltbot_skill:
+                                skills.append({
+                                    "name": name,
+                                    "repo": f"{github_user}/{name}",
+                                    "description": desc,
+                                    "detected_via": "SKILL.md"
+                                })
                     except:
                         pass
     except Exception as e:
