@@ -373,11 +373,37 @@ def main():
     parser.add_argument("--dry-run", action="store_true", help="List skills without checking APIs")
     parser.add_argument("--discover", action="store_true", help="Just discover and list skills with detected APIs")
     parser.add_argument("--json", "-j", action="store_true", help="JSON output")
-    parser.add_argument("--github-user", "-u", default="mvanhorn", help="GitHub username")
+    parser.add_argument("--github-user", "-u", 
+                       default=os.environ.get("SKILL_API_MONITOR_USER", ""),
+                       help="GitHub username (required, or set SKILL_API_MONITOR_USER)")
+    parser.add_argument("--setup", action="store_true", help="Interactive setup/onboarding")
     parser.add_argument("--include-x", action="store_true", help="Also search X/Twitter (slower)")
     parser.add_argument("--skip-x", action="store_true", help="Legacy: skip X search (now default)")
     
     args = parser.parse_args()
+    
+    # Interactive setup/onboarding
+    if args.setup:
+        run_setup()
+        return
+    
+    # Validate github-user
+    if not args.github_user:
+        # Check for saved config
+        config_file = SCRIPT_DIR / ".config.json"
+        if config_file.exists():
+            try:
+                with open(config_file) as f:
+                    config = json.load(f)
+                    args.github_user = config.get("github_user", "")
+            except:
+                pass
+        
+        if not args.github_user:
+            print("❌ Error: --github-user is required", file=sys.stderr)
+            print("\nFirst time? Run: python3 check.py --setup", file=sys.stderr)
+            print("Or specify: python3 check.py --github-user YOUR_USERNAME --discover", file=sys.stderr)
+            sys.exit(1)
     
     # Discover skills dynamically
     print(f"🔍 Discovering public skills for {args.github_user}...", file=sys.stderr)

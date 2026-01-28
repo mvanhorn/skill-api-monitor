@@ -1,4 +1,6 @@
 {
+  "_comment": "This file contains API detection patterns. The skill auto-detects APIs from SKILL.md content using these patterns. Add your own APIs here.",
+  
   "parallel": {
     "name": "Parallel.ai",
     "api": "parallel.ai",
@@ -17,7 +19,7 @@
     "name": "Tesla Fleet API",
     "api": "developer.tesla.com",
     "docs": "https://developer.tesla.com/docs/fleet-api",
-    "changelog": "https://developer.tesla.com/docs/fleet-api#changelog",
+    "changelog": "https://developer.tesla.com/docs/fleet-api",
     "twitter": "@Tesla"
   },
   "xai": {
@@ -49,18 +51,95 @@
     "changelog": "https://supabase.com/changelog",
     "twitter": "@supabase"
   },
-  "remotion-server": {
+  "remotion": {
     "name": "Remotion",
     "api": "remotion.dev",
     "docs": "https://www.remotion.dev/docs",
     "changelog": "https://www.remotion.dev/changelog",
     "twitter": "@remotion_dev"
   },
-  "nano-triple": {
+  "gemini": {
     "name": "Google Gemini",
     "api": "ai.google.dev",
     "docs": "https://ai.google.dev/gemini-api/docs",
     "changelog": null,
     "twitter": "@GoogleAI"
+  },
+  "spotify": {
+    "name": "Spotify Web API",
+    "api": "developer.spotify.com",
+    "docs": "https://developer.spotify.com/documentation/web-api",
+    "changelog": "https://developer.spotify.com/documentation/web-api/reference/changelog",
+    "twitter": "@SpotifyPlatform"
+  },
+  "openai": {
+    "name": "OpenAI API",
+    "api": "api.openai.com",
+    "docs": "https://platform.openai.com/docs",
+    "changelog": "https://platform.openai.com/docs/changelog",
+    "twitter": "@OpenAI"
+  },
+  "anthropic": {
+    "name": "Anthropic API",
+    "api": "api.anthropic.com",
+    "docs": "https://docs.anthropic.com",
+    "changelog": null,
+    "twitter": "@AnthropicAI"
+  },
+  "stripe": {
+    "name": "Stripe API",
+    "api": "api.stripe.com",
+    "docs": "https://stripe.com/docs/api",
+    "changelog": "https://stripe.com/docs/changelog",
+    "twitter": "@stripe"
+  },
+  "twilio": {
+    "name": "Twilio API",
+    "api": "api.twilio.com",
+    "docs": "https://www.twilio.com/docs",
+    "changelog": null,
+    "twitter": "@twilio"
+  },
+  "notion": {
+    "name": "Notion API",
+    "api": "api.notion.com",
+    "docs": "https://developers.notion.com",
+    "changelog": "https://developers.notion.com/changelog",
+    "twitter": "@NotionAPI"
+  },
+  "slack": {
+    "name": "Slack API",
+    "api": "api.slack.com",
+    "docs": "https://api.slack.com/docs",
+    "changelog": "https://api.slack.com/changelog",
+    "twitter": "@SlackAPI"
+  },
+  "discord": {
+    "name": "Discord API",
+    "api": "discord.com/api",
+    "docs": "https://discord.com/developers/docs",
+    "changelog": null,
+    "twitter": "@discord"
+  },
+  "github": {
+    "name": "GitHub API",
+    "api": "api.github.com",
+    "docs": "https://docs.github.com/en/rest",
+    "changelog": "https://github.blog/changelog/",
+    "twitter": "@GitHubAPI"
+  },
+  "linear": {
+    "name": "Linear API",
+    "api": "api.linear.app",
+    "docs": "https://developers.linear.app",
+    "changelog": "https://linear.app/changelog",
+    "twitter": "@linear"
+  },
+  "vercel": {
+    "name": "Vercel API",
+    "api": "api.vercel.com",
+    "docs": "https://vercel.com/docs/rest-api",
+    "changelog": "https://vercel.com/changelog",
+    "twitter": "@vercel"
   }
 }
