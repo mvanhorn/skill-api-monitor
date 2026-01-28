@@ -1,0 +1,66 @@
+{
+  "parallel": {
+    "name": "Parallel.ai",
+    "api": "parallel.ai",
+    "docs": "https://docs.parallel.ai",
+    "changelog": "https://parallel.ai/blog",
+    "twitter": "@p0"
+  },
+  "polymarket": {
+    "name": "Polymarket/Gamma",
+    "api": "gamma-api.polymarket.com",
+    "docs": "https://docs.polymarket.com",
+    "changelog": null,
+    "twitter": "@Polymarket"
+  },
+  "tesla": {
+    "name": "Tesla Fleet API",
+    "api": "developer.tesla.com",
+    "docs": "https://developer.tesla.com/docs/fleet-api",
+    "changelog": "https://developer.tesla.com/docs/fleet-api#changelog",
+    "twitter": "@Tesla"
+  },
+  "xai": {
+    "name": "xAI/Grok",
+    "api": "api.x.ai",
+    "docs": "https://docs.x.ai",
+    "changelog": null,
+    "twitter": "@xikidigital"
+  },
+  "search-x": {
+    "name": "xAI Search",
+    "api": "api.x.ai",
+    "docs": "https://docs.x.ai",
+    "changelog": null,
+    "twitter": "@xikidigital",
+    "note": "Uses same API as xai skill"
+  },
+  "manus": {
+    "name": "Manus AI",
+    "api": "manus.ai",
+    "docs": "https://docs.manus.ai",
+    "changelog": null,
+    "twitter": "@maboroshiAI"
+  },
+  "supabase": {
+    "name": "Supabase",
+    "api": "supabase.com",
+    "docs": "https://supabase.com/docs",
+    "changelog": "https://supabase.com/changelog",
+    "twitter": "@supabase"
+  },
+  "remotion-server": {
+    "name": "Remotion",
+    "api": "remotion.dev",
+    "docs": "https://www.remotion.dev/docs",
+    "changelog": "https://www.remotion.dev/changelog",
+    "twitter": "@remotion_dev"
+  },
+  "nano-triple": {
+    "name": "Google Gemini",
+    "api": "ai.google.dev",
+    "docs": "https://ai.google.dev/gemini-api/docs",
+    "changelog": null,
+    "twitter": "@GoogleAI"
+  }
+}
