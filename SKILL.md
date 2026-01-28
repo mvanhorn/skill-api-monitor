@@ -123,13 +123,26 @@ Edit `scripts/skill_apis.json` to add new API patterns:
 }
 ```
 
-## Weekly Cron Setup
+## Automatic Weekly Checks
 
-Set up a weekly check (example for Sundays 10 AM):
+This skill doesn't run automatically - you set up your own schedule.
+
+### Moltbot Cron (Recommended)
+
+Ask your agent:
+> "Set up a weekly cron to run skill-api-monitor every Sunday"
+
+### System Cron
 
 ```bash
-# In your Moltbot config or via cron tool
-python3 ~/path/to/skill-api-monitor/scripts/check.py --github-user YOUR_USERNAME --days 7
+# crontab -e
+0 10 * * 0 python3 /path/to/check.py --github-user YOUR_USERNAME --days 7
+```
+
+### Manual
+
+```bash
+python3 {baseDir}/scripts/check.py --github-user YOUR_USERNAME --days 7
 ```
 
 ## Requirements

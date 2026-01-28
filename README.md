@@ -62,6 +62,42 @@ Auto-detects: Parallel.ai, Supabase, Tesla, xAI, Remotion, Gemini, Polymarket, S
 
 Add your own in `scripts/skill_apis.json`.
 
+## Automatic Weekly Checks
+
+This skill doesn't run automatically by default - you set up your own schedule.
+
+### Option 1: Moltbot Cron (Recommended)
+
+If you're using Moltbot, ask your agent to set up a weekly cron:
+
+> "Set up a weekly cron job to run skill-api-monitor every Sunday at 10 AM"
+
+### Option 2: System Cron
+
+Add to your crontab (`crontab -e`):
+
+```bash
+# Run every Sunday at 10 AM
+0 10 * * 0 python3 /path/to/skill-api-monitor/scripts/check.py --github-user YOUR_USERNAME --days 7
+```
+
+### Option 3: GitHub Actions
+
+Create `.github/workflows/check.yml` in your repo:
+
+```yaml
+name: Weekly API Check
+on:
+  schedule:
+    - cron: '0 10 * * 0'  # Sundays 10 AM UTC
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/check.py --github-user YOUR_USERNAME --days 7
+```
+
 ## Requirements
 
 - Python 3.10+
