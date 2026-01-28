@@ -231,7 +231,7 @@ def fetch_changelog(url: str) -> str:
     return ""
 
 
-def check_skill_api(skill: dict, api_info: dict, days: int = 7) -> dict:
+def check_skill_api(skill: dict, api_info: dict, days: int = 7, skip_x: bool = False) -> dict:
     """Check a single skill's API for updates."""
     result = {
         "skill": skill["name"],
@@ -241,9 +241,9 @@ def check_skill_api(skill: dict, api_info: dict, days: int = 7) -> dict:
         "recommendation": None
     }
     
-    # Check X/Twitter
+    # Check X/Twitter (skip if flag set - it's slow)
     twitter = api_info.get("twitter")
-    if twitter:
+    if twitter and not skip_x:
         tweets = search_x_for_updates(twitter, days)
         for tweet in tweets[:3]:
             content = tweet.get("text", tweet.get("content", ""))[:200]
@@ -294,6 +294,7 @@ def main():
     parser.add_argument("--discover", action="store_true", help="Just discover and list skills with detected APIs")
     parser.add_argument("--json", "-j", action="store_true", help="JSON output")
     parser.add_argument("--github-user", "-u", default="mvanhorn", help="GitHub username")
+    parser.add_argument("--skip-x", action="store_true", help="Skip X/Twitter search (faster)")
     
     args = parser.parse_args()
     
@@ -344,7 +345,7 @@ def main():
     print(f"\n⏳ Checking APIs for updates (last {args.days} days)...", file=sys.stderr)
     results = []
     for sd in skill_data:
-        result = check_skill_api(sd["skill"], sd["api_info"], args.days)
+        result = check_skill_api(sd["skill"], sd["api_info"], args.days, skip_x=args.skip_x)
         results.append(result)
     
     # Output
