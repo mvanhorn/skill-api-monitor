@@ -188,8 +188,83 @@ def detect_api_from_content(content: str, skill_name: str) -> dict:
     return {"name": f"Unknown ({skill_name})", "docs": None, "twitter": None}
 
 
+def fetch_and_scan_page(url: str, keywords: list, days: int = 7) -> list:
+    """Fetch a page and scan for recent updates."""
+    updates = []
+    if not url:
+        return updates
+    
+    try:
+        result = subprocess.run(
+            ["curl", "-sL", "--max-time", "15", "-A", "Mozilla/5.0", url],
+            capture_output=True, text=True, timeout=20
+        )
+        if result.returncode == 0:
+            content = result.stdout[:50000]  # Limit size
+            content_lower = content.lower()
+            
+            # Check for recent date patterns
+            today = datetime.now()
+            recent_dates = []
+            for i in range(days):
+                d = today - timedelta(days=i)
+                recent_dates.extend([
+                    d.strftime("%Y-%m-%d"),
+                    d.strftime("%B %d, %Y"),
+                    d.strftime("%B %d"),
+                    d.strftime("%b %d, %Y"),
+                    d.strftime("%b %d"),
+                    f"{d.strftime('%B').lower()} {d.day}",  # january 28
+                ])
+            
+            # Also check current month/year
+            recent_dates.extend([
+                today.strftime("%B %Y").lower(),  # january 2026
+                today.strftime("%Y-%m"),  # 2026-01
+            ])
+            
+            for date_str in recent_dates:
+                if date_str.lower() in content_lower:
+                    # Found recent date, now check for update keywords nearby
+                    for kw in keywords:
+                        if kw in content_lower:
+                            # Extract snippet around the keyword
+                            idx = content_lower.find(kw)
+                            snippet = content[max(0, idx-50):idx+150].strip()
+                            snippet = re.sub(r'<[^>]+>', ' ', snippet)  # Strip HTML
+                            snippet = re.sub(r'\s+', ' ', snippet)[:150]
+                            updates.append({
+                                "source": "Changelog/Blog",
+                                "url": url,
+                                "content": f"Recent update ({date_str}): {snippet}"
+                            })
+                            return updates  # One match is enough
+    except Exception as e:
+        pass
+    
+    return updates
+
+
+def scan_api_for_updates(api_info: dict, days: int = 7) -> list:
+    """Scan API changelog and blog for recent updates."""
+    updates = []
+    keywords = ["api", "feature", "update", "release", "new", "launch", "announce", "endpoint", "sdk"]
+    
+    # Check changelog
+    changelog_url = api_info.get("changelog")
+    if changelog_url:
+        updates.extend(fetch_and_scan_page(changelog_url, keywords, days))
+    
+    # Check docs main page
+    docs_url = api_info.get("docs")
+    if docs_url and not updates:  # Only if changelog didn't find anything
+        updates.extend(fetch_and_scan_page(docs_url, keywords, days))
+    
+    return updates
+
+
 def search_x_for_updates(twitter_handle: str, days: int = 7) -> list:
-    """Search X/Twitter for recent announcements."""
+    """Search X/Twitter for recent announcements (optional, slower)."""
     if not twitter_handle:
         return []
     
@@ -202,7 +277,7 @@ def search_x_for_updates(twitter_handle: str, days: int = 7) -> list:
         query = f"from:{handle} (API OR update OR new OR feature OR release OR announce OR launch)"
         result = subprocess.run(
             ["node", str(search_script), "--days", str(days), "--json", query],
-            capture_output=True, text=True, timeout=90
+            capture_output=True, text=True, timeout=60
         )
         if result.returncode == 0 and result.stdout.strip():
             try:
@@ -231,7 +306,7 @@ def fetch_changelog(url: str) -> str:
     return ""
 
 
-def check_skill_api(skill: dict, api_info: dict, days: int = 7, skip_x: bool = False) -> dict:
+def check_skill_api(skill: dict, api_info: dict, days: int = 7, skip_x: bool = False, include_x: bool = False) -> dict:
     """Check a single skill's API for updates."""
     result = {
         "skill": skill["name"],
@@ -241,9 +316,14 @@ def check_skill_api(skill: dict, api_info: dict, days: int = 7, skip_x: bool = F
         "recommendation": None
     }
     
-    # Check X/Twitter (skip if flag set - it's slow)
+    # PRIMARY: Scan changelog/blog for recent updates
+    changelog_updates = scan_api_for_updates(api_info, days)
+    for update in changelog_updates[:3]:
+        result["updates_found"].append(update)
+    
+    # OPTIONAL: X/Twitter search (slower, use --include-x to enable)
     twitter = api_info.get("twitter")
-    if twitter and not skip_x:
+    if twitter and include_x and not skip_x:
         tweets = search_x_for_updates(twitter, days)
         for tweet in tweets[:3]:
             content = tweet.get("text", tweet.get("content", ""))[:200]
@@ -294,7 +374,8 @@ def main():
     parser.add_argument("--discover", action="store_true", help="Just discover and list skills with detected APIs")
     parser.add_argument("--json", "-j", action="store_true", help="JSON output")
     parser.add_argument("--github-user", "-u", default="mvanhorn", help="GitHub username")
-    parser.add_argument("--skip-x", action="store_true", help="Skip X/Twitter search (faster)")
+    parser.add_argument("--include-x", action="store_true", help="Also search X/Twitter (slower)")
+    parser.add_argument("--skip-x", action="store_true", help="Legacy: skip X search (now default)")
     
     args = parser.parse_args()
     
@@ -345,7 +426,7 @@ def main():
     print(f"\n⏳ Checking APIs for updates (last {args.days} days)...", file=sys.stderr)
     results = []
     for sd in skill_data:
-        result = check_skill_api(sd["skill"], sd["api_info"], args.days, skip_x=args.skip_x)
+        result = check_skill_api(sd["skill"], sd["api_info"], args.days, skip_x=args.skip_x, include_x=args.include_x)
         results.append(result)
     
     # Output
