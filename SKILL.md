@@ -1,19 +1,21 @@
 ---
 name: skill-api-monitor
-description: Monitor APIs used by your Clawdbot skills and recommend updates when new features are released.
+description: Monitor APIs used by your Moltbot/Clawdbot skills and recommend updates when new features are released.
 metadata:
-  clawdbot:
+  moltbot:
     emoji: "🔍"
 ---
 
 # Skill API Monitor 🔍
 
-Automatically checks the APIs behind your Clawdbot skills for new features and recommends updates.
+Automatically checks the APIs behind your Moltbot skills for new features and recommends updates.
+
+**Note:** Supports both Moltbot (new name) and Clawdbot (old name) patterns during the transition. MoltHub URLs coming soon.
 
 ## What it does
 
-1. Scans your GitHub repos for Clawdbot skills (mvanhorn/clawdbot-skill-*)
-2. Maps each skill to its underlying API/service
+1. Scans your GitHub repos for skills (moltbot-skill-*, clawdbot-skill-*)
+2. Reads each SKILL.md to auto-detect which API it uses
 3. Checks changelogs, docs, and X/Twitter for updates
 4. Generates recommendations like "Parallel added X - recommend updating skill"
 
