@@ -113,6 +113,25 @@ def discover_public_skills(github_user: str = "mvanhorn") -> list:
                         "repo": f"{github_user}/{name}",
                         "description": desc
                     })
+                    continue
+                
+                # Also check repos that might be skills without the prefix
+                # by looking for SKILL.md (lightweight check via API)
+                if name not in ["dotfiles", "config", ".github"]:  # Skip common non-skill repos
+                    try:
+                        check = subprocess.run(
+                            ["gh", "api", f"repos/{github_user}/{name}/contents/SKILL.md", "-q", ".name"],
+                            capture_output=True, text=True, timeout=5
+                        )
+                        if check.returncode == 0 and "SKILL.md" in check.stdout:
+                            skills.append({
+                                "name": name,
+                                "repo": f"{github_user}/{name}",
+                                "description": desc,
+                                "detected_via": "SKILL.md"
+                            })
+                    except:
+                        pass
     except Exception as e:
         print(f"Error discovering skills: {e}", file=sys.stderr)
     
